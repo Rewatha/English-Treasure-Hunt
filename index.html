@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Treasure Hunt - Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const { useState } = React;
+
+        // Lucide Icons as SVG components
+        const Trophy = () => (
+            React.createElement('svg', { 
+                xmlns: "http://www.w3.org/2000/svg", 
+                width: "64", 
+                height: "64", 
+                viewBox: "0 0 24 24", 
+                fill: "none", 
+                stroke: "currentColor", 
+                strokeWidth: "2", 
+                strokeLinecap: "round", 
+                strokeLinejoin: "round" 
+            },
+                React.createElement('path', { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6" }),
+                React.createElement('path', { d: "M18 9h1.5a2.5 2.5 0 0 0 0-5H18" }),
+                React.createElement('path', { d: "M4 22h16" }),
+                React.createElement('path', { d: "M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" }),
+                React.createElement('path', { d: "M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" }),
+                React.createElement('path', { d: "M18 2H6v7a6 6 0 0 0 12 0V2Z" })
+            )
+        );
+
+        const User = () => (
+            React.createElement('svg', { 
+                xmlns: "http://www.w3.org/2000/svg", 
+                width: "16", 
+                height: "16", 
+                viewBox: "0 0 24 24", 
+                fill: "none", 
+                stroke: "currentColor", 
+                strokeWidth: "2", 
+                strokeLinecap: "round", 
+                strokeLinejoin: "round",
+                style: { display: 'inline' }
+            },
+                React.createElement('path', { d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" }),
+                React.createElement('circle', { cx: "12", cy: "7", r: "4" })
+            )
+        );
+
+        const Hash = () => (
+            React.createElement('svg', { 
+                xmlns: "http://www.w3.org/2000/svg", 
+                width: "16", 
+                height: "16", 
+                viewBox: "0 0 24 24", 
+                fill: "none", 
+                stroke: "currentColor", 
+                strokeWidth: "2", 
+                strokeLinecap: "round", 
+                strokeLinejoin: "round",
+                style: { display: 'inline' }
+            },
+                React.createElement('line', { x1: "4", y1: "9", x2: "20", y2: "9" }),
+                React.createElement('line', { x1: "4", y1: "15", x2: "20", y2: "15" }),
+                React.createElement('line', { x1: "10", y1: "3", x2: "8", y2: "21" }),
+                React.createElement('line', { x1: "16", y1: "3", x2: "14", y2: "21" })
+            )
+        );
+
+        function EnglishTreasureLogin() {
+            const [name, setName] = useState('');
+            const [gmail, setGmail] = useState('');
+            const [error, setError] = useState('');
+            const [playCount, setPlayCount] = useState(null);
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+            // Validate Gmail format
+            const validateGmail = (email) => {
+                const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/i;
+                return gmailPattern.test(email);
+            };
+
+            // Get play count for Gmail
+            const getPlayCount = (userGmail) => {
+                try {
+                    const data = localStorage.getItem(`player_${userGmail}`);
+                    if (data) {
+                        return JSON.parse(data).playCount || 0;
+                    }
+                } catch (e) {
+                    console.error('Error reading data');
+                }
+                return 0;
+            };
+
+            // Save player data
+            const savePlayerData = (userGmail, playerName) => {
+                const currentCount = getPlayCount(userGmail);
+                const newCount = currentCount + 1;
+                
+                const playerData = {
+                    name: playerName,
+                    gmail: userGmail,
+                    playCount: newCount,
+                    lastPlayed: new Date().toISOString(),
+                    attempts: []
+                };
+
+                try {
+                    const existing = localStorage.getItem(`player_${userGmail}`);
+                    if (existing) {
+                        const existingData = JSON.parse(existing);
+                        playerData.attempts = existingData.attempts || [];
+                    }
+                } catch (e) {
+                    console.error('Error reading existing data');
+                }
+
+                localStorage.setItem(`player_${userGmail}`, JSON.stringify(playerData));
+                localStorage.setItem('currentPlayer', JSON.stringify({
+                    name: playerName,
+                    gmail: userGmail,
+                    playCount: newCount
+                }));
+
+                return newCount;
+            };
+
+            const handleSubmit = () => {
+                setError('');
+
+                if (!name.trim()) {
+                    setError('Please enter your name');
+                    return;
+                }
+
+                if (!gmail.trim()) {
+                    setError('Please enter your Gmail');
+                    return;
+                }
+
+                const lowerGmail = gmail.toLowerCase().trim();
+                
+                if (!validateGmail(lowerGmail)) {
+                    setError('Invalid Gmail format. Must be a valid Gmail address (example@gmail.com)');
+                    return;
+                }
+
+                const count = savePlayerData(lowerGmail, name.trim());
+                setPlayCount(count);
+                setIsLoggedIn(true);
+            };
+
+            const handleStartGame = () => {
+                // Navigate to picture puzzle page
+                window.location.href = 'picture-puzzle.html';
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    handleSubmit();
+                }
+            };
+
+            if (isLoggedIn) {
+                return React.createElement('div', { 
+                    className: "min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-4" 
+                },
+                    React.createElement('div', { className: "bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center" },
+                        React.createElement('div', { className: "mb-6" },
+                            React.createElement(Trophy)
+                        ),
+                        React.createElement('h2', { className: "text-3xl font-bold text-gray-800 mb-4" },
+                            playCount === 1 ? 'Welcome!' : 'Welcome Back!'
+                        ),
+                        React.createElement('div', { className: "bg-blue-50 rounded-xl p-6 mb-6" },
+                            React.createElement('p', { className: "text-lg text-gray-700 mb-2" },
+                                React.createElement('strong', null, name)
+                            ),
+                            React.createElement('p', { className: "text-sm text-gray-600 mb-4" },
+                                'Gmail: ' + gmail.toLowerCase()
+                            ),
+                            React.createElement('div', { className: "bg-white rounded-lg p-4 inline-block" },
+                                React.createElement('p', { className: "text-sm text-gray-600" }, 'This is your'),
+                                React.createElement('p', { className: "text-4xl font-bold text-purple-600" },
+                                    playCount === 1 ? '1st' : playCount === 2 ? '2nd' : playCount === 3 ? '3rd' : `${playCount}th`
+                                ),
+                                React.createElement('p', { className: "text-sm text-gray-600" }, 'attempt')
+                            )
+                        ),
+                        React.createElement('div', { className: "bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 mb-6" },
+                            React.createElement('h3', { className: "font-bold text-gray-800 mb-2" }, '🎯 Game Rules:'),
+                            React.createElement('ul', { className: "text-sm text-gray-700 text-left space-y-1" },
+                                React.createElement('li', null, '✅ Complete 2 entry challenges first'),
+                                React.createElement('li', null, '✅ Then solve 5 treasure envelopes'),
+                                React.createElement('li', null, '⏱️ Total time: 5-8 minutes'),
+                                React.createElement('li', null, '⏭️ Can skip 1 clue (+1 min penalty)')
+                            )
+                        ),
+                        React.createElement('button', {
+                            onClick: handleStartGame,
+                            className: "w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all shadow-lg text-lg"
+                        }, '🚀 Start Treasure Hunt!')
+                    )
+                );
+            }
+
+            return React.createElement('div', { 
+                className: "min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-4" 
+            },
+                React.createElement('div', { className: "bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full" },
+                    React.createElement('div', { className: "text-center mb-8" },
+                        React.createElement('div', { className: "mb-4 flex justify-center" },
+                            React.createElement(Trophy)
+                        ),
+                        React.createElement('h1', { className: "text-3xl font-bold text-gray-800 mb-2" },
+                            '🔐 English Treasure Hunt'
+                        ),
+                        React.createElement('p', { className: "text-gray-600" },
+                            'Enter your details to begin the adventure!'
+                        )
+                    ),
+                    React.createElement('div', { className: "space-y-6" },
+                        React.createElement('div', null,
+                            React.createElement('label', { className: "block text-sm font-semibold text-gray-700 mb-2" },
+                                React.createElement(User),
+                                ' Full Name'
+                            ),
+                            React.createElement('input', {
+                                type: "text",
+                                value: name,
+                                onChange: (e) => setName(e.target.value),
+                                onKeyPress: handleKeyPress,
+                                placeholder: "Enter your name",
+                                className: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                            })
+                        ),
+                        React.createElement('div', null,
+                            React.createElement('label', { className: "block text-sm font-semibold text-gray-700 mb-2" },
+                                React.createElement(Hash),
+                                ' Gmail Address'
+                            ),
+                            React.createElement('input', {
+                                type: "email",
+                                value: gmail,
+                                onChange: (e) => setGmail(e.target.value),
+                                onKeyPress: handleKeyPress,
+                                placeholder: "example@gmail.com",
+                                className: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none transition-colors"
+                            }),
+                            React.createElement('p', { className: "text-xs text-gray-500 mt-2" },
+                                'Must be a valid Gmail address'
+                            )
+                        ),
+                        error && React.createElement('div', { className: "bg-red-50 border-2 border-red-300 rounded-xl p-3" },
+                            React.createElement('p', { className: "text-red-700 text-sm font-semibold" },
+                                '⚠️ ' + error
+                            )
+                        ),
+                        React.createElement('button', {
+                            onClick: handleSubmit,
+                            className: "w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-6 rounded-xl hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all shadow-lg"
+                        }, 'Continue →')
+                    ),
+                    React.createElement('div', { className: "mt-6 text-center" },
+                        React.createElement('p', { className: "text-sm text-gray-500" },
+                            '💡 Proudly celebrating English Day through fun and learning!'
+                        )
+                    )
+                )
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(EnglishTreasureLogin));
+    </script>
+</body>
+</html>

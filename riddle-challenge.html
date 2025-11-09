@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riddle Challenge - English Treasure Hunt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+        }
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script>
+        const { useState, useEffect } = React;
+
+        // Riddles database (100 riddles from your document)
+        const RIDDLES = [
+            { id: 1, riddle: "I'm full of words but not a speaker.", answer: "book", hint: "You read it" },
+            { id: 2, riddle: "The more you take, the more you leave behind.", answer: "footsteps", hint: "Walking creates these" },
+            { id: 3, riddle: "What has hands but can't clap?", answer: "clock", hint: "Tells time" },
+            { id: 4, riddle: "What has keys but can't open locks?", answer: "piano", hint: "Musical instrument" },
+            { id: 5, riddle: "What has a neck but no head?", answer: "bottle", hint: "Contains liquid" },
+            { id: 6, riddle: "What has a face and two hands but no arms or legs?", answer: "clock", hint: "Shows hours and minutes" },
+            { id: 7, riddle: "What comes down but never goes up?", answer: "rain", hint: "Falls from clouds" },
+            { id: 8, riddle: "What gets wetter the more it dries?", answer: "towel", hint: "Used after shower" },
+            { id: 9, riddle: "What has eyes but cannot see?", answer: "needle", hint: "Used for sewing" },
+            { id: 10, riddle: "What has one eye but can't see?", answer: "needle", hint: "Thread goes through it" },
+            { id: 11, riddle: "What has a thumb and four fingers but is not alive?", answer: "glove", hint: "Worn on hands" },
+            { id: 12, riddle: "What runs but never walks?", answer: "river", hint: "Flows with water" },
+            { id: 13, riddle: "What can travel around the world while staying in a corner?", answer: "stamp", hint: "On an envelope" },
+            { id: 14, riddle: "What has teeth but can't bite?", answer: "comb", hint: "Used for hair" },
+            { id: 15, riddle: "What has legs but doesn't walk?", answer: "table", hint: "Furniture" },
+            { id: 16, riddle: "What belongs to you but is used more by others?", answer: "yourname", hint: "People call you by it" },
+            { id: 17, riddle: "What has many keys but can't open a door?", answer: "keyboard", hint: "Computer accessory" },
+            { id: 18, riddle: "What gets broken when you name it?", answer: "silence", hint: "The opposite of noise" },
+            { id: 19, riddle: "I'm tall when I'm young and short when I'm old.", answer: "candle", hint: "Burns with a flame" },
+            { id: 20, riddle: "What can you catch but not throw?", answer: "cold", hint: "An illness" },
+            { id: 21, riddle: "What comes once in a minute, twice in a moment, but never in a thousand years?", answer: "m", hint: "It's a letter" },
+            { id: 22, riddle: "What has an end but no beginning?", answer: "stick", hint: "A piece of wood" },
+            { id: 23, riddle: "What has cities, but no houses; forests, but no trees; rivers, but no water?", answer: "map", hint: "Shows locations" },
+            { id: 24, riddle: "What goes up but never comes down?", answer: "age", hint: "Gets higher every year" },
+            { id: 25, riddle: "What has ears but cannot hear?", answer: "corn", hint: "A vegetable" },
+            { id: 26, riddle: "What can fill a room but takes no space?", answer: "light", hint: "Brightens darkness" },
+            { id: 27, riddle: "What has a head, a tail, is brown, and has no legs?", answer: "coin", hint: "Money" },
+            { id: 28, riddle: "What begins with T, ends with T and has T in it?", answer: "teapot", hint: "Used for tea" },
+            { id: 29, riddle: "What gets sharper the more you use it?", answer: "brain", hint: "In your head" },
+            { id: 30, riddle: "What has an eye but cannot see?", answer: "storm", hint: "Weather phenomenon" },
+            { id: 31, riddle: "What can you hold in your left hand but not in your right?", answer: "yourrighthand", hint: "Part of your body" },
+            { id: 32, riddle: "The more you take out, the bigger I get.", answer: "hole", hint: "An opening" },
+            { id: 33, riddle: "What is full of holes but still holds water?", answer: "sponge", hint: "Used for cleaning" },
+            { id: 34, riddle: "What has many rings but no fingers?", answer: "tree", hint: "Found in nature" },
+            { id: 35, riddle: "What starts with P, ends with E, and has thousands of letters?", answer: "postoffice", hint: "Where you send mail" },
+            { id: 36, riddle: "What word becomes shorter when you add two letters to it?", answer: "short", hint: "Opposite of long" },
+            { id: 37, riddle: "What can't talk but will reply when spoken to?", answer: "echo", hint: "Sound reflection" },
+            { id: 38, riddle: "What can fly without wings?", answer: "time", hint: "It passes by" },
+            { id: 39, riddle: "What goes up when rain comes down?", answer: "umbrella", hint: "Keeps you dry" },
+            { id: 40, riddle: "What has no legs but can run?", answer: "river", hint: "Flows with water" },
+            { id: 41, riddle: "What kind of room has no doors or windows?", answer: "mushroom", hint: "It's a fungus" },
+            { id: 42, riddle: "What has one head, one foot, and four legs?", answer: "bed", hint: "You sleep on it" },
+            { id: 43, riddle: "What has words but never speaks?", answer: "book", hint: "You read it" },
+            { id: 44, riddle: "What kind of tree can you carry in your hand?", answer: "palm", hint: "Part of your hand" },
+            { id: 45, riddle: "What comes at the end of everything?", answer: "g", hint: "It's a letter" },
+            { id: 46, riddle: "What type of dress can never be worn?", answer: "address", hint: "Where you live" },
+            { id: 47, riddle: "What has branches but no fruit or leaves?", answer: "bank", hint: "Stores money" },
+            { id: 48, riddle: "What has a ring but no finger?", answer: "telephone", hint: "Used to call" },
+            { id: 49, riddle: "What starts with an E, ends with an E, but has only one letter inside?", answer: "envelope", hint: "Holds letters" },
+            { id: 50, riddle: "What has a bottom at the top?", answer: "leg", hint: "Part of body" },
+            { id: 51, riddle: "What gets bigger the more you take away?", answer: "hole", hint: "An opening" },
+            { id: 52, riddle: "What kind of band never plays music?", answer: "rubberband", hint: "Stretchy" },
+            { id: 53, riddle: "What has 13 hearts but no other organs?", answer: "deckofcards", hint: "Used in games" },
+            { id: 54, riddle: "What goes through cities and fields but never moves?", answer: "road", hint: "Cars drive on it" },
+            { id: 55, riddle: "What starts with W and ends with T?", answer: "wallet", hint: "Holds money" },
+            { id: 56, riddle: "What kind of coat is always wet when you put it on?", answer: "paint", hint: "For walls" },
+            { id: 57, riddle: "What can be cracked, made, told, and played?", answer: "joke", hint: "Makes you laugh" },
+            { id: 58, riddle: "What is always in front of you but can't be seen?", answer: "future", hint: "Tomorrow and beyond" },
+            { id: 59, riddle: "What can you keep after giving to someone?", answer: "yourword", hint: "A promise" },
+            { id: 60, riddle: "What has four fingers and a thumb but isn't alive?", answer: "glove", hint: "Worn on hand" },
+            { id: 61, riddle: "What is easy to lift but hard to throw?", answer: "feather", hint: "Very light" },
+            { id: 62, riddle: "What has 88 keys but can't open a single door?", answer: "piano", hint: "Musical instrument" },
+            { id: 63, riddle: "What kind of cup doesn't hold water?", answer: "cupcake", hint: "A dessert" },
+            { id: 64, riddle: "What has a bed but doesn't sleep?", answer: "river", hint: "Flows with water" },
+            { id: 65, riddle: "What has a tail but no body?", answer: "coin", hint: "Money" },
+            { id: 66, riddle: "What has stripes but no clothes?", answer: "zebra", hint: "An animal" },
+            { id: 67, riddle: "What is black when clean and white when dirty?", answer: "blackboard", hint: "In classrooms" },
+            { id: 68, riddle: "What starts with C, ends with E, and has thousands of letters?", answer: "college", hint: "Place of education" },
+            { id: 69, riddle: "What gets used up the moment you name it?", answer: "silence", hint: "Quiet" },
+            { id: 70, riddle: "What gets bigger the more you share?", answer: "happiness", hint: "A feeling" },
+            { id: 71, riddle: "What lives if it's fed, but dies if it's given a drink?", answer: "fire", hint: "Burns hot" },
+            { id: 72, riddle: "What word is spelled wrong in the dictionary?", answer: "wrong", hint: "The word itself" },
+            { id: 73, riddle: "What can't be used until it's broken?", answer: "egg", hint: "For breakfast" },
+            { id: 74, riddle: "What has four wheels and flies?", answer: "garbagetruck", hint: "Collects trash" },
+            { id: 75, riddle: "What has a bed but never sleeps and a mouth but never eats?", answer: "river", hint: "Flows with water" },
+            { id: 76, riddle: "What goes up and down but doesn't move?", answer: "stairs", hint: "Connects floors" },
+            { id: 77, riddle: "What has one voice and goes on four legs in the morning, two in the afternoon, and three in the evening?", answer: "human", hint: "A person's life" },
+            { id: 78, riddle: "What starts with F and ends with U-N?", answer: "fun", hint: "Enjoyment" },
+            { id: 79, riddle: "What is always coming but never arrives?", answer: "tomorrow", hint: "The next day" },
+            { id: 80, riddle: "What runs but never gets tired?", answer: "river", hint: "Flows with water" },
+            { id: 81, riddle: "What can you break without touching it?", answer: "promise", hint: "A commitment" },
+            { id: 82, riddle: "What has pages but no story?", answer: "calendar", hint: "Shows dates" },
+            { id: 83, riddle: "What can be written, but can't be read?", answer: "secret", hint: "Hidden info" },
+            { id: 84, riddle: "What never asks questions but gets answered all the time?", answer: "phone", hint: "Device to call" },
+            { id: 85, riddle: "What gets lighter as it gets darker?", answer: "candle", hint: "Burns with flame" },
+            { id: 86, riddle: "What comes before you can hear it?", answer: "thought", hint: "In your mind" },
+            { id: 87, riddle: "What word contains all 26 letters?", answer: "alphabet", hint: "A to Z" },
+            { id: 88, riddle: "What five-letter word becomes shorter when you add two letters?", answer: "short", hint: "Opposite of long" },
+            { id: 89, riddle: "What has 12 months but no one lives in it?", answer: "calendar", hint: "Shows dates" },
+            { id: 90, riddle: "What is made of water but if you put it into water it dies?", answer: "ice", hint: "Frozen water" },
+            { id: 91, riddle: "What has four legs in the morning, two in the afternoon, and three at night?", answer: "man", hint: "Human life stages" },
+            { id: 92, riddle: "What begins with R, ends with E, and has a thousand letters?", answer: "race", hint: "Competition" },
+            { id: 93, riddle: "What is always moving but has no legs?", answer: "time", hint: "It passes" },
+            { id: 94, riddle: "What is bright but cannot be seen?", answer: "thought", hint: "An idea" },
+            { id: 95, riddle: "What has one head, one foot, and no body?", answer: "bed", hint: "You sleep on it" },
+            { id: 96, riddle: "What is white and cold and falls from the sky?", answer: "snow", hint: "Winter weather" },
+            { id: 97, riddle: "What starts with an E and has only one letter inside?", answer: "envelope", hint: "Holds letters" },
+            { id: 98, riddle: "What kind of tree grows on your hand?", answer: "palm", hint: "Part of your hand" },
+            { id: 99, riddle: "What runs but never stops?", answer: "river", hint: "Flows with water" },
+            { id: 100, riddle: "What comes once in a year, twice in a week, and never in a day?", answer: "e", hint: "It's a letter" }
+        ];
+
+        // Icons
+        const Clock = () => (
+            React.createElement('svg', { 
+                xmlns: "http://www.w3.org/2000/svg", 
+                width: "20", 
+                height: "20", 
+                viewBox: "0 0 24 24", 
+                fill: "none", 
+                stroke: "currentColor", 
+                strokeWidth: "2", 
+                strokeLinecap: "round", 
+                strokeLinejoin: "round",
+                style: { display: 'inline' }
+            },
+                React.createElement('circle', { cx: "12", cy: "12", r: "10" }),
+                React.createElement('polyline', { points: "12 6 12 12 16 14" })
+            )
+        );
+
+        const Brain = () => (
+            React.createElement('svg', { 
+                xmlns: "http://www.w3.org/2000/svg", 
+                width: "48", 
+                height: "48", 
+                viewBox: "0 0 24 24", 
+                fill: "none", 
+                stroke: "currentColor", 
+                strokeWidth: "2", 
+                strokeLinecap: "round", 
+                strokeLinejoin: "round"
+            },
+                React.createElement('path', { d: "M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z" }),
+                React.createElement('path', { d: "M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z" })
+            )
+        );
+
+        function RiddleChallenge() {
+            const [stage, setStage] = useState('select'); // 'select', 'playing', 'correct', 'wrong'
+            const [selectedNumber, setSelectedNumber] = useState('');
+            const [currentRiddle, setCurrentRiddle] = useState(null);
+            const [answer, setAnswer] = useState('');
+            const [timeLeft, setTimeLeft] = useState(30);
+            const [playerName, setPlayerName] = useState('');
+            const [showHint, setShowHint] = useState(false);
+
+            // Load player info and check if picture puzzle was completed
+            useEffect(() => {
+                try {
+                    const currentPlayer = localStorage.getItem('currentPlayer');
+                    const picturePuzzleCompleted = localStorage.getItem('picturePuzzleCompleted');
+                    
+                    if (!currentPlayer) {
+                        window.location.href = 'index.html';
+                        return;
+                    }
+                    
+                    if (picturePuzzleCompleted !== 'true') {
+                        // Must complete picture puzzle first
+                        window.location.href = 'picture-puzzle.html';
+                        return;
+                    }
+                    
+                    const player = JSON.parse(currentPlayer);
+                    setPlayerName(player.name);
+                } catch (e) {
+                    window.location.href = 'index.html';
+                }
+            }, []);
+
+            // Timer countdown
+            useEffect(() => {
+                if (stage === 'playing' && timeLeft > 0) {
+                    const timer = setTimeout(() => {
+                        setTimeLeft(timeLeft - 1);
+                    }, 1000);
+                    return () => clearTimeout(timer);
+                } else if (stage === 'playing' && timeLeft === 0) {
+                    setStage('wrong');
+                }
+            }, [stage, timeLeft]);
+
+            const handleNumberSelect = () => {
+                const num = parseInt(selectedNumber);
+                if (num >= 1 && num <= 100) {
+                    // Pick a RANDOM riddle (not based on the number)
+                    const randomIndex = Math.floor(Math.random() * RIDDLES.length);
+                    const riddle = RIDDLES[randomIndex];
+                    setCurrentRiddle(riddle);
+                    setStage('playing');
+                    setTimeLeft(30);
+                    setShowHint(false);
+                }
+            };
+
+            const checkAnswer = () => {
+                if (!answer.trim()) return;
+
+                const userAnswer = answer.toLowerCase().trim().replace(/\s+/g, '');
+                const correctAnswer = currentRiddle.answer.toLowerCase().replace(/\s+/g, '');
+
+                if (userAnswer === correctAnswer) {
+                    setStage('correct');
+                    localStorage.setItem('riddleChallengeCompleted', 'true');
+                } else {
+                    setStage('wrong');
+                }
+            };
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter') {
+                    if (stage === 'select') {
+                        handleNumberSelect();
+                    } else if (stage === 'playing') {
+                        checkAnswer();
+                    }
+                }
+            };
+
+            const handleShowHint = () => {
+                setShowHint(true);
+            };
+
+            const goToTreasureHunt = () => {
+                window.location.href = 'treasure-hunt.html';
+            };
+
+            const tryAgain = () => {
+                window.location.href = 'index.html';
+            };
+
+            // SELECT NUMBER STAGE
+            if (stage === 'select') {
+                return React.createElement('div', { 
+                    className: "min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4" 
+                },
+                    React.createElement('div', { className: "bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center" },
+                        React.createElement('div', { className: "mb-6 flex justify-center" },
+                            React.createElement(Brain)
+                        ),
+                        React.createElement('h1', { className: "text-3xl font-bold text-gray-800 mb-2" },
+                            '🧠 Riddle Challenge'
+                        ),
+                        React.createElement('p', { className: "text-gray-600 mb-2" },
+                            'Great job, ' + playerName + '!'
+                        ),
+                        React.createElement('p', { className: "text-sm text-gray-500 mb-6" },
+                            'Entry Challenge - Stage 2 of 2'
+                        ),
+                        React.createElement('div', { className: "bg-blue-50 rounded-xl p-6 mb-6" },
+                            React.createElement('h3', { className: "font-bold text-gray-800 mb-3" },
+                                '📋 Instructions:'
+                            ),
+                            React.createElement('ul', { className: "text-sm text-gray-700 text-left space-y-2" },
+                                React.createElement('li', null, '1️⃣ Pick a number from 1 to 100'),
+                                React.createElement('li', null, '2️⃣ Read the riddle carefully'),
+                                React.createElement('li', null, '3️⃣ Type your answer'),
+                                React.createElement('li', null, '⏱️ You have 30 seconds'),
+                                React.createElement('li', null, '✅ Correct → Start Treasure Hunt!'),
+                                React.createElement('li', null, '❌ Wrong → Try again later')
+                            )
+                        ),
+                        React.createElement('div', { className: "mb-6" },
+                            React.createElement('label', { className: "block text-sm font-semibold text-gray-700 mb-2" },
+                                'Pick a number (1-100):'
+                            ),
+                            React.createElement('input', {
+                                type: "number",
+                                min: "1",
+                                max: "100",
+                                value: selectedNumber,
+                                onChange: (e) => setSelectedNumber(e.target.value),
+                                onKeyPress: handleKeyPress,
+                                placeholder: "Enter number",
+                                className: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors text-center text-2xl font-bold"
+                            })
+                        ),
+                        React.createElement('button', {
+                            onClick: handleNumberSelect,
+                            disabled: !selectedNumber || selectedNumber < 1 || selectedNumber > 100,
+                            className: "w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold py-4 px-6 rounded-xl hover:from-indigo-600 hover:to-purple-600 transform hover:scale-105 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        }, '🎯 Show Me the Riddle!')
+                    )
+                );
+            }
+
+            // PLAYING STAGE
+            if (stage === 'playing') {
+                return React.createElement('div', { 
+                    className: "min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4" 
+                },
+                    React.createElement('div', { className: "bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full" },
+                        React.createElement('div', { className: "text-center mb-6" },
+                            React.createElement('div', { 
+                                className: "inline-block bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-full font-bold text-xl mb-4 " + (timeLeft <= 10 ? 'pulse-animation' : '')
+                            },
+                                React.createElement(Clock),
+                                ' ' + timeLeft + 's'
+                            ),
+                            React.createElement('h2', { className: "text-2xl font-bold text-gray-800 mb-2" },
+                                'Riddle #' + currentRiddle.id
+                            ),
+                            React.createElement('p', { className: "text-sm text-gray-600" },
+                                'Think carefully and answer...'
+                            )
+                        ),
+                        React.createElement('div', { className: "bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-8 mb-6" },
+                            React.createElement('div', { className: "text-4xl mb-4 text-center" }, '❓'),
+                            React.createElement('p', { className: "text-lg text-gray-800 text-center leading-relaxed" },
+                                currentRiddle.riddle
+                            ),
+                            showHint && currentRiddle.hint && React.createElement('div', { className: "bg-white rounded-lg p-3 mt-4" },
+                                React.createElement('p', { className: "text-sm text-gray-600 font-semibold" },
+                                    '💡 Hint: ' + currentRiddle.hint
+                                )
+                            )
+                        ),
+                        React.createElement('div', { className: "mb-6" },
+                            React.createElement('label', { className: "block text-sm font-semibold text-gray-700 mb-2" },
+                                'Your Answer:'
+                            ),
+                            React.createElement('input', {
+                                type: "text",
+                                value: answer,
+                                onChange: (e) => setAnswer(e.target.value),
+                                onKeyPress: handleKeyPress,
+                                placeholder: "Type your answer here",
+                                className: "w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors text-center text-xl",
+                                autoFocus: true
+                            })
+                        ),
+                        timeLeft <= 15 && React.createElement('div', { className: "mb-4" },
+                            React.createElement('button', {
+                                onClick: handleShowHint,
+                                disabled: showHint || !currentRiddle.hint,
+                                className: "w-full bg-yellow-500 text-white font-bold py-3 px-4 rounded-xl hover:bg-yellow-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            }, showHint ? '💡 Hint Shown' : '💡 Show Hint')
+                        ),
+                        React.createElement('button', {
+                            onClick: checkAnswer,
+                            disabled: !answer.trim(),
+                            className: "w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-600 hover:to-emerald-700 transform hover:scale-105 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        }, '✅ Submit Answer')
+                    )
+                );
+            }
+
+            // CORRECT ANSWER STAGE
+            if (stage === 'correct') {
+                return React.createElement('div', { 
+                    className: "min-h-screen bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600 flex items-center justify-center p-4" 
+                },
+                    React.createElement('div', { className: "bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center" },
+                        React.createElement('div', { className: "mb-6" },
+                            React.createElement('div', { className: "text-8xl mb-4 animate-bounce" }, '🎊')
+                        ),
+                        React.createElement('h2', { className: "text-4xl font-bold text-green-600 mb-4" },
+                            'Excellent!'
+                        ),
+                        React.createElement('p', { className: "text-xl text-gray-700 mb-6" },
+                            'The answer is: ',
+                            React.createElement('strong', null, currentRiddle.answer)
+                        ),
+                        React.createElement('div', { className: "bg-green-50 rounded-xl p-6 mb-6" },
+                            React.createElement('p', { className: "text-gray-700 mb-2 font-bold" },
+                                '🎉 Both Entry Challenges Completed!'
+                            ),
+                            React.createElement('p', { className: "text-sm text-gray-600 mb-4" },
+                                '✅ Picture Puzzle - Passed'
+                            ),
+                            React.createElement('p', { className: "text-sm text-gray-600 mb-4" },
+                                '✅ Riddle Challenge - Passed'
+                            ),
+                            React.createElement('p', { className: "text-purple-600 font-bold" },
+                                'You\'re ready for the Treasure Hunt!'
+                            )
+                        ),
+                        React.createElement('button', {
+                            onClick: goToTreasureHunt,
+                            className: "w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4 px-6 rounded-xl hover:from-yellow-600 hover:to-orange-600 transform hover:scale-105 transition-all shadow-lg text-lg"
+                        }, '🏆 Start Treasure Hunt!')
+                    )
+                );
+            }
+
+            // WRONG ANSWER STAGE
+            if (stage === 'wrong') {
+                return React.createElement('div', { 
+                    className: "min-h-screen bg-gradient-to-br from-red-400 via-pink-500 to-purple-600 flex items-center justify-center p-4" 
+                },
+                    React.createElement('div', { className: "bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center" },
+                        React.createElement('div', { className: "mb-6" },
+                            React.createElement('div', { className: "text-8xl mb-4" }, '💭')
+                        ),
+                        React.createElement('h2', { className: "text-4xl font-bold text-red-600 mb-4" },
+                            timeLeft === 0 ? 'Time\'s Up!' : 'Not Quite!'
+                        ),
+                        React.createElement('p', { className: "text-xl text-gray-700 mb-2" },
+                            'The correct answer was:'
+                        ),
+                        React.createElement('p', { className: "text-3xl font-bold text-purple-600 mb-6" },
+                            currentRiddle.answer
+                        ),
+                        React.createElement('div', { className: "bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 mb-6" },
+                            React.createElement('p', { className: "text-gray-700 font-semibold mb-2" },
+                                '❌ Challenge Failed'
+                            ),
+                            React.createElement('p', { className: "text-sm text-gray-600" },
+                                'Don\'t worry! Come back and try again with a different riddle number.'
+                            )
+                        ),
+                        React.createElement('button', {
+                            onClick: tryAgain,
+                            className: "w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 px-6 rounded-xl hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all shadow-lg text-lg"
+                        }, '🔄 Try Next Time')
+                    )
+                );
+            }
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(RiddleChallenge));
+    </script>
+</body>
+</html>

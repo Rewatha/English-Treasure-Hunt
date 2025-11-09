@@ -373,10 +373,7 @@ english-treasure-hunt/
 ├── treasure-hunt.html          # Main treasure hunt game
 ├── results.html                # Results & prizes
 │
-├── README.md                   # This file
-├── LICENSE.txt                 # License information
-├── INSTALL.txt                 # Installation guide
-└── CHANGELOG.txt               # Version history
+└── README.md                   # This file
 ```
 
 **Total:** 5 HTML files + documentation

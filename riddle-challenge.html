@@ -173,7 +173,7 @@
             const [selectedNumber, setSelectedNumber] = useState('');
             const [currentRiddle, setCurrentRiddle] = useState(null);
             const [answer, setAnswer] = useState('');
-            const [timeLeft, setTimeLeft] = useState(30);
+            const [timeLeft, setTimeLeft] = useState(60);
             const [playerName, setPlayerName] = useState('');
             const [showHint, setShowHint] = useState(false);
 
@@ -362,7 +362,7 @@
                                 autoFocus: true
                             })
                         ),
-                        timeLeft <= 15 && React.createElement('div', { className: "mb-4" },
+                        timeLeft <= 35 && React.createElement('div', { className: "mb-4" },
                             React.createElement('button', {
                                 onClick: handleShowHint,
                                 disabled: showHint || !currentRiddle.hint,

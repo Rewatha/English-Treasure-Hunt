@@ -52,16 +52,16 @@ An interactive web-based educational game for English Day events. Players comple
 ### **Step 2: Picture Puzzle Challenge** 🖼️
 - Pick a lucky number from **1-30**
 - Guess the English word from emoji pictures
-- **Time limit:** 30 seconds
-- **Hint:** Available at 15 seconds
+- **Time limit:** 60 seconds
+- **Hint:** Available at 30 seconds
 - ✅ Pass → Move to Riddle Challenge
 - ❌ Fail → Restart from login
 
 ### **Step 3: Riddle Challenge** 🧠
 - Pick a lucky number from **1-100**
 - Solve the riddle
-- **Time limit:** 30 seconds
-- **Hint:** Available at 15 seconds
+- **Time limit:** 60 seconds
+- **Hint:** Available at 30 seconds
 - ✅ Pass → Start Treasure Hunt
 - ❌ Fail → Restart from login
 

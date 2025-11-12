@@ -144,14 +144,18 @@ npx http-server -p 8000
 
 ### **⏱️ Change Time Limits**
 
-#### Entry Challenges Timer (30 seconds)
+#### Entry Challenges Timer (60 seconds)
 ```javascript
 // In picture-puzzle.html and riddle-challenge.html
 // Find this line (around line 80):
-const [timeLeft, setTimeLeft] = useState(30);
+const [timeLeft, setTimeLeft] = useState(60);
+// and
+setTimeLeft(60);
 
 // Change to your desired seconds:
-const [timeLeft, setTimeLeft] = useState(45); // 45 seconds
+const [timeLeft, setTimeLeft] = useState(120); // 120 seconds
+// and
+setTimeLeft(120);
 ```
 
 #### Treasure Hunt Timer (8 minutes)
@@ -165,15 +169,15 @@ const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
 const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
 ```
 
-#### Hint Appearance Time (15 seconds)
+#### Hint Appearance Time (30 seconds)
 ```javascript
 // In picture-puzzle.html and riddle-challenge.html
 // Find this line:
-timeLeft <= 15
+timeLeft <= 30
 
 // Change to show hint earlier/later:
-timeLeft <= 20  // Hint appears at 20 seconds
-timeLeft <= 10  // Hint appears at 10 seconds
+timeLeft <= 40  // Hint appears at 40 seconds
+timeLeft <= 60  // Hint appears at 60 seconds
 ```
 
 ---

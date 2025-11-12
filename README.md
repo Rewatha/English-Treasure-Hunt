@@ -38,7 +38,7 @@ An interactive web-based educational game for English Day events. Players comple
 
 ## 🎮 Demo
 
-**[Play the Game Here](#)** *https://rewatha.github.io/English-Treasure-Hunt/index.html*
+**[Play the Game Here](#)** *https://rewatha.github.io/English-Treasure-Hunt/*
 
 ---
 

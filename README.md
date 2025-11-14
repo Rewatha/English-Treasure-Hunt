@@ -147,14 +147,13 @@ npx http-server -p 8000
 #### Entry Challenges Timer (60 seconds)
 ```javascript
 // In picture-puzzle.html and riddle-challenge.html
-// Find this line (around line 80):
 const [timeLeft, setTimeLeft] = useState(60);
-// and
+// And
 setTimeLeft(60);
 
 // Change to your desired seconds:
 const [timeLeft, setTimeLeft] = useState(120); // 120 seconds
-// and
+// And
 setTimeLeft(120);
 ```
 

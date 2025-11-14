@@ -160,7 +160,6 @@ setTimeLeft(120);
 #### Treasure Hunt Timer (8 minutes)
 ```javascript
 // In treasure-hunt.html
-// Find this line (around line 42):
 const [timeLeft, setTimeLeft] = useState(480); // 480 = 8 minutes
 
 // Change to your desired time:
@@ -269,7 +268,6 @@ const TREASURE_CODES = [
 #### Total Skips Allowed
 ```javascript
 // In treasure-hunt.html
-// Find this line (around line 45):
 const [totalSkipsLeft, setTotalSkipsLeft] = useState(2);
 
 // Change to allow more/fewer skips:

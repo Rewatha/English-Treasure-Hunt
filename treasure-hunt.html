@@ -40,8 +40,8 @@
     <script>
         const { useState, useEffect } = React;
 
-        const SUPABASE_URL = 'https://jvqkzkzhotgacfmlkbxs.supabase.co'; 
-        const SUPABASE_KEY = 'sb_publishable_FvLS_jRu5150a9StB01SsA_7enG13UJ'; 
+        const SUPABASE_URL = 'https://jvqkzkzhotgacfmlkbxs.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_FvLS_jRu5150a9StB01SsA_7enG13UJ';
 
         // Create the connection
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -239,11 +239,12 @@
                 }
             };
 
-            const saveAttempt = (completed) => {
+            const saveAttempt = async (completed) => {
                 try {
                     const currentPlayer = JSON.parse(localStorage.getItem('currentPlayer'));
                     const timeTaken = Math.floor((Date.now() - startTime) / 1000);
 
+                    // 1. Keep LocalStorage (So the Results page still works immediately)
                     const attemptData = {
                         completed: completed,
                         timeTaken: timeTaken,
@@ -252,18 +253,29 @@
                         totalSkipsUsed: totalSkipsUsed,
                         timestamp: new Date().toISOString()
                     };
-
                     localStorage.setItem('lastAttempt', JSON.stringify(attemptData));
 
-                    const playerKey = `player_${currentPlayer.studentNumber}`;
-                    const playerData = JSON.parse(localStorage.getItem(playerKey));
-                    if (playerData) {
-                        if (!playerData.attempts) playerData.attempts = [];
-                        playerData.attempts.push(attemptData);
-                        localStorage.setItem(playerKey, JSON.stringify(playerData));
+                    // 2. SEND TO SUPABASE CLOUD
+                    // We use the client you created at the top of the script
+                    const { error } = await supabaseClient
+                        .from('leaderboard')
+                        .insert([
+                            {
+                                player_name: currentPlayer.name,
+                                player_gmail: currentPlayer.gmail,
+                                score: completedEnvelopes.length,
+                                time_taken: timeTaken
+                            }
+                        ]);
+
+                    if (error) {
+                        console.error('Supabase Error:', error);
+                    } else {
+                        console.log('✅ Score saved to Cloud Database!');
                     }
+
                 } catch (e) {
-                    console.error('Error saving attempt');
+                    console.error('Error saving attempt:', e);
                 }
             };
 

@@ -25,36 +25,35 @@
             const [rankings, setRankings] = useState([]);
 
             useEffect(() => {
-                const allData = [];
-                // Loop through localStorage to find all player data
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('player_')) {
-                        try {
-                            const player = JSON.parse(localStorage.getItem(key));
-                            // Use the most recent attempt for ranking
-                            const lastAttempt = player.attempts ? player.attempts[player.attempts.length - 1] : null;
+                const fetchLeaderboard = async () => {
+                    try {
+                        // Fetch data from Supabase
+                        // Order: Highest Score first, then Fastest Time (Lowest time)
+                        let { data, error } = await supabaseClient
+                            .from('leaderboard')
+                            .select('*')
+                            .order('score', { ascending: false })
+                            .order('time_taken', { ascending: true })
+                            .limit(50);
 
-                            if (lastAttempt) {
-                                allData.push({
-                                    name: player.name,
-                                    gmail: player.gmail,
-                                    score: lastAttempt.envelopesCompleted || 0,
-                                    time: lastAttempt.timeTaken || 9999,
-                                    completed: lastAttempt.completed
-                                });
-                            }
-                        } catch (e) { console.error("Error parsing player data"); }
+                        if (error) throw error;
+
+                        if (data) {
+                            // Map the database columns to the format our table expects
+                            const formattedData = data.map(player => ({
+                                name: player.player_name,
+                                gmail: player.player_gmail,
+                                score: player.score,
+                                time: player.time_taken
+                            }));
+                            setRankings(formattedData);
+                        }
+                    } catch (error) {
+                        console.error("Error loading leaderboard:", error);
                     }
-                }
+                };
 
-                // Sort by envelopes completed (High to Low), then by time (Low to High)
-                const sorted = allData.sort((a, b) => {
-                    if (b.score !== a.score) return b.score - a.score;
-                    return a.time - b.time;
-                });
-
-                setRankings(sorted);
+                fetchLeaderboard();
             }, []);
 
             const formatTime = (seconds) => {

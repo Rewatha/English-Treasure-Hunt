@@ -15,6 +15,12 @@
     <script>
         const { useState, useEffect } = React;
 
+        const SUPABASE_URL = 'https://jvqkzkzhotgacfmlkbxs.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_FvLS_jRu5150a9StB01SsA_7enG13UJ';
+
+        // Create the connection
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         function Leaderboard() {
             const [rankings, setRankings] = useState([]);
 

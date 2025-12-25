@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,26 +8,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
         }
+
         .pulse-animation {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .5;
+            }
         }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
 
     <script>
         const { useState, useEffect } = React;
+
+        const SUPABASE_URL = 'https://jvqkzkzhotgacfmlkbxs.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_FvLS_jRu5150a9StB01SsA_7enG13UJ'; 
+
+        // Create the connection
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // Envelope 1: Vocabulary Puzzles
         const VOCABULARY_PUZZLES = [
@@ -113,12 +131,12 @@
                     const currentPlayer = localStorage.getItem('currentPlayer');
                     const picturePuzzle = localStorage.getItem('picturePuzzleCompleted');
                     const riddleChallenge = localStorage.getItem('riddleChallengeCompleted');
-                    
+
                     if (!currentPlayer || picturePuzzle !== 'true' || riddleChallenge !== 'true') {
                         window.location.href = 'index.html';
                         return;
                     }
-                    
+
                     const player = JSON.parse(currentPlayer);
                     setPlayerName(player.name);
                     setStartTime(Date.now());
@@ -139,7 +157,7 @@
             }, [timeLeft, isComplete]);
 
             const getPuzzleBank = (envelopeNum) => {
-                switch(envelopeNum) {
+                switch (envelopeNum) {
                     case 1: return VOCABULARY_PUZZLES;
                     case 2: return GRAMMAR_PUZZLES;
                     case 3: return IDIOM_CIPHER_PUZZLES;
@@ -151,7 +169,7 @@
             const loadPuzzle = (envelopeNum) => {
                 const puzzles = getPuzzleBank(envelopeNum);
                 const availablePuzzles = puzzles.filter((p, idx) => !usedPuzzleIds.includes(idx));
-                
+
                 if (availablePuzzles.length === 0) {
                     setUsedPuzzleIds([]);
                     const randomPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
@@ -162,7 +180,7 @@
                     setUsedPuzzleIds([...usedPuzzleIds, puzzleIndex]);
                     setCurrentPuzzle(randomPuzzle);
                 }
-                
+
                 setAnswer('');
                 setWrongAnswer(false);
                 setShowHint(false);
@@ -177,7 +195,7 @@
                 if (userAnswer === correctAnswer) {
                     setWrongAnswer(false);
                     setCompletedEnvelopes([...completedEnvelopes, currentEnvelope]);
-                    
+
                     if (currentEnvelope === 5) {
                         setIsComplete(true);
                         saveAttempt(true);
@@ -225,7 +243,7 @@
                 try {
                     const currentPlayer = JSON.parse(localStorage.getItem('currentPlayer'));
                     const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-                    
+
                     const attemptData = {
                         completed: completed,
                         timeTaken: timeTaken,
@@ -234,9 +252,9 @@
                         totalSkipsUsed: totalSkipsUsed,
                         timestamp: new Date().toISOString()
                     };
-                    
+
                     localStorage.setItem('lastAttempt', JSON.stringify(attemptData));
-                    
+
                     const playerKey = `player_${currentPlayer.studentNumber}`;
                     const playerData = JSON.parse(localStorage.getItem(playerKey));
                     if (playerData) {
@@ -290,11 +308,11 @@
                                 React.createElement('span', null, `Envelope ${currentEnvelope} of 5`)
                             ),
                             React.createElement('div', { className: "w-full bg-gray-200 rounded-full h-4" },
-                                React.createElement('div', { className: "bg-gradient-to-r from-green-500 to-emerald-600 h-4 rounded-full transition-all", style: { width: `${completedEnvelopes.length / 5 * 100}%` }})
+                                React.createElement('div', { className: "bg-gradient-to-r from-green-500 to-emerald-600 h-4 rounded-full transition-all", style: { width: `${completedEnvelopes.length / 5 * 100}%` } })
                             )
                         ),
                         React.createElement('div', { className: "flex justify-between mt-4" },
-                            [1,2,3,4,5].map(num => 
+                            [1, 2, 3, 4, 5].map(num =>
                                 React.createElement('div', { key: num, className: "text-center " + (completedEnvelopes.includes(num) ? 'opacity-50' : num === currentEnvelope ? 'scale-110' : 'opacity-30') },
                                     React.createElement('div', { className: "text-3xl mb-1" }, getEnvelopeEmoji(num)),
                                     React.createElement('div', { className: "text-xs font-semibold text-gray-700" }, completedEnvelopes.includes(num) ? '✅' : num === currentEnvelope ? '▶️' : '⏸')
@@ -338,7 +356,7 @@
                                 disabled: showHint,
                                 className: "bg-yellow-500 text-white font-bold py-3 px-4 rounded-xl hover:bg-yellow-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             }, showHint ? '💡 Hint Shown' : '💡 Show Hint (-1 min)'),
-                            
+
                             React.createElement('button', {
                                 onClick: handleSkipQuestion,
                                 disabled: totalSkipsLeft <= 0,
@@ -365,4 +383,5 @@
         root.render(React.createElement(TreasureHunt));
     </script>
 </body>
+
 </html>

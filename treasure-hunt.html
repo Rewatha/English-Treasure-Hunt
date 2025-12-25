@@ -244,7 +244,7 @@
                     const currentPlayer = JSON.parse(localStorage.getItem('currentPlayer'));
                     const timeTaken = Math.floor((Date.now() - startTime) / 1000);
 
-                    // 1. Keep LocalStorage (So the Results page still works immediately)
+                    // 1. Keep LocalStorage (So the Results page works immediately)
                     const attemptData = {
                         completed: completed,
                         timeTaken: timeTaken,
@@ -255,8 +255,8 @@
                     };
                     localStorage.setItem('lastAttempt', JSON.stringify(attemptData));
 
-                    // 2. SEND TO SUPABASE CLOUD
-                    // We use the client you created at the top of the script
+                    // 2. SEND TO SUPABASE CLOUD (This is the new part!)
+                    console.log("Saving to Supabase...");
                     const { error } = await supabaseClient
                         .from('leaderboard')
                         .insert([

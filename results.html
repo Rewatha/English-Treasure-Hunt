@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,15 +14,25 @@
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
         }
+
         @keyframes confetti {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
         }
+
         .confetti {
             animation: confetti 3s ease-in-out infinite;
         }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
 
@@ -30,13 +41,13 @@
 
         // Icons
         const Trophy = () => (
-            React.createElement('svg', { 
-                xmlns: "http://www.w3.org/2000/svg", 
-                width: "80", 
-                height: "80", 
-                viewBox: "0 0 24 24", 
-                fill: "none", 
-                stroke: "currentColor", 
+            React.createElement('svg', {
+                xmlns: "http://www.w3.org/2000/svg",
+                width: "80",
+                height: "80",
+                viewBox: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
                 strokeWidth: "2"
             },
                 React.createElement('path', { d: "M6 9H4.5a2.5 2.5 0 0 1 0-5H6" }),
@@ -49,13 +60,13 @@
         );
 
         const Clock = () => (
-            React.createElement('svg', { 
-                xmlns: "http://www.w3.org/2000/svg", 
-                width: "24", 
-                height: "24", 
-                viewBox: "0 0 24 24", 
-                fill: "none", 
-                stroke: "currentColor", 
+            React.createElement('svg', {
+                xmlns: "http://www.w3.org/2000/svg",
+                width: "24",
+                height: "24",
+                viewBox: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
                 strokeWidth: "2",
                 style: { display: 'inline' }
             },
@@ -65,13 +76,13 @@
         );
 
         const Award = () => (
-            React.createElement('svg', { 
-                xmlns: "http://www.w3.org/2000/svg", 
-                width: "24", 
-                height: "24", 
-                viewBox: "0 0 24 24", 
-                fill: "none", 
-                stroke: "currentColor", 
+            React.createElement('svg', {
+                xmlns: "http://www.w3.org/2000/svg",
+                width: "24",
+                height: "24",
+                viewBox: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
                 strokeWidth: "2",
                 style: { display: 'inline' }
             },
@@ -88,16 +99,15 @@
 
             useEffect(() => {
                 try {
-                    // Load player info
                     const currentPlayer = localStorage.getItem('currentPlayer');
                     if (!currentPlayer) {
                         window.location.href = 'index.html';
                         return;
                     }
-                    
+
                     const player = JSON.parse(currentPlayer);
                     setPlayerName(player.name);
-                    setStudentNumber(player.studentNumber);
+                    setStudentNumber(player.gmail);
 
                     // Load attempt data
                     const lastAttempt = localStorage.getItem('lastAttempt');
@@ -125,7 +135,7 @@
                 localStorage.removeItem('picturePuzzleCompleted');
                 localStorage.removeItem('riddleChallengeCompleted');
                 localStorage.removeItem('lastAttempt');
-                
+
                 // Go back to login
                 window.location.href = 'index.html';
             };
@@ -135,8 +145,8 @@
             };
 
             if (loading) {
-                return React.createElement('div', { 
-                    className: "min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 flex items-center justify-center" 
+                return React.createElement('div', {
+                    className: "min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-800 flex items-center justify-center"
                 },
                     React.createElement('div', { className: "text-white text-2xl" }, 'Loading results...')
                 );
@@ -151,13 +161,13 @@
             // Calculate remaining time (started with 480 seconds = 8 minutes)
             const timeRemaining = Math.max(0, 480 - timeTaken);
 
-            return React.createElement('div', { 
-                className: "min-h-screen bg-gradient-to-br from-" + (isComplete ? "yellow-400 via-orange-500 to-red-500" : "gray-600 via-gray-700 to-gray-800") + " p-4" 
+            return React.createElement('div', {
+                className: "min-h-screen bg-gradient-to-br from-" + (isComplete ? "yellow-400 via-orange-500 to-red-500" : "gray-600 via-gray-700 to-gray-800") + " p-4"
             },
                 React.createElement('div', { className: "max-w-3xl mx-auto py-8" },
                     // Confetti for winners
                     isComplete && React.createElement('div', { className: "fixed inset-0 pointer-events-none overflow-hidden" },
-                        [...Array(20)].map((_, i) => 
+                        [...Array(20)].map((_, i) =>
                             React.createElement('div', {
                                 key: i,
                                 className: "confetti absolute text-4xl",
@@ -184,7 +194,7 @@
                                 playerName
                             ),
                             React.createElement('p', { className: "text-sm text-gray-600" },
-                                'Student Number: ' + studentNumber
+                                'Gmail: ' + studentNumber // studentNumber variable now holds the Gmail string
                             )
                         ),
 
@@ -202,7 +212,7 @@
                             // Time
                             React.createElement('div', { className: "bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl p-6 text-center" },
                                 React.createElement('div', { className: "text-6xl mb-3" }, '⏱️'),
-                                React.createElement('p', { className: "text-sm text-gray-600 mb-2" }, 
+                                React.createElement('p', { className: "text-sm text-gray-600 mb-2" },
                                     isComplete ? 'Time Remaining' : 'Time Used'
                                 ),
                                 React.createElement('p', { className: "text-5xl font-bold text-purple-600" },
@@ -236,29 +246,29 @@
                         ),
 
                         // Performance Message
-                        React.createElement('div', { 
+                        React.createElement('div', {
                             className: "rounded-2xl p-6 mb-6 text-center " + (
                                 isComplete && envelopesCompleted === 5 ? "bg-green-100 border-2 border-green-300" :
-                                envelopesCompleted >= 3 ? "bg-blue-100 border-2 border-blue-300" :
-                                "bg-orange-100 border-2 border-orange-300"
+                                    envelopesCompleted >= 3 ? "bg-blue-100 border-2 border-blue-300" :
+                                        "bg-orange-100 border-2 border-orange-300"
                             )
                         },
                             React.createElement('h3', { className: "text-2xl font-bold text-gray-800 mb-3" },
                                 isComplete && envelopesCompleted === 5 ? '🌟 Perfect Score!' :
-                                envelopesCompleted >= 3 ? '👏 Great Effort!' :
-                                '💪 Keep Trying!'
+                                    envelopesCompleted >= 3 ? '👏 Great Effort!' :
+                                        '💪 Keep Trying!'
                             ),
                             React.createElement('p', { className: "text-gray-700" },
-                                isComplete && envelopesCompleted === 5 ? 
+                                isComplete && envelopesCompleted === 5 ?
                                     'Congratulations! You found the treasure and completed all 5 envelopes!' :
-                                envelopesCompleted >= 3 ?
-                                    `Well done! You completed ${envelopesCompleted} out of 5 envelopes.` :
-                                    `You completed ${envelopesCompleted} envelopes. Try again to improve your score!`
+                                    envelopesCompleted >= 3 ?
+                                        `Well done! You completed ${envelopesCompleted} out of 5 envelopes.` :
+                                        `You completed ${envelopesCompleted} envelopes. Try again to improve your score!`
                             )
                         ),
 
                         // Prize Information
-                        isComplete && envelopesCompleted === 5 && React.createElement('div', { 
+                        isComplete && envelopesCompleted === 5 && React.createElement('div', {
                             className: "bg-gradient-to-br from-yellow-200 to-orange-200 border-4 border-yellow-400 rounded-2xl p-8 mb-6 text-center"
                         },
                             React.createElement('div', { className: "text-6xl mb-4" }, '🎁'),
@@ -276,21 +286,26 @@
                                 )
                             ),
                             React.createElement('div', { className: "bg-purple-600 text-white px-6 py-3 rounded-xl inline-block font-bold text-xl" },
-                                'WINNER CODE: ' + studentNumber.slice(-4)
+                                'WINNER CODE: ' + studentNumber.split('@')[0].toUpperCase()
                             )
                         ),
 
                         // Action Buttons
-                        React.createElement('div', { className: "grid md:grid-cols-2 gap-4" },
+                        React.createElement('div', { className: "grid md:grid-cols-3 gap-4" },
                             React.createElement('button', {
                                 onClick: handleHome,
                                 className: "bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-4 px-6 rounded-xl hover:from-purple-600 hover:to-indigo-700 transform hover:scale-105 transition-all shadow-lg"
                             }, '🏠 Home'),
-                            
+
+                            React.createElement('button', {
+                                onClick: () => window.location.href = 'leaderboard.html',
+                                className: "bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold py-4 px-6 rounded-xl hover:from-yellow-600 hover:to-orange-700 transform hover:scale-105 transition-all shadow-lg"
+                            }, '🏆 Leaderboard'),
+
                             React.createElement('button', {
                                 onClick: () => window.print(),
                                 className: "bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-bold py-4 px-6 rounded-xl hover:from-blue-600 hover:to-cyan-700 transform hover:scale-105 transition-all shadow-lg"
-                            }, '🖨️ Print Results')
+                            }, '🖨️ Print')
                         )
                     ),
 
@@ -311,4 +326,5 @@
         root.render(React.createElement(ResultsPage));
     </script>
 </body>
+
 </html>

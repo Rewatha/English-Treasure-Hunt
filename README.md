@@ -27,7 +27,7 @@ English Treasure Hunt is a browser-based game where users solve English-related 
 This project was created to demonstrate how web technologies can be used to support educational activities in a fun and engaging way.
 
 ## Live Demo
-https://rewatha.github.io/LionCodeX_Project/
+https://rewatha.github.io/English-Treasure-Hunt/
 
 ## Status
 Completed (University Project)
